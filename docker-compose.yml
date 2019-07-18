@@ -1,0 +1,31 @@
+# Use root/example as user/password credentials
+#ocker run -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=devdb -e MYSQL_USER=dbuser -e MYSQL_PASSWORD=dbpassword -p 3306:3306 mysql
+
+#run this on startup
+# mysql -u root -p
+# ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'example';
+
+version: '3.1'
+
+services:
+
+  sqldb:
+    container_name: db_client
+    image: mysql
+    environment:
+      MYSQL_DATABASE: testdb
+      MYSQL_ROOT_PASSWORD: 'example'
+    ports:
+      - "3306:3306"
+    volumes: 
+      - './sqldatabase:/var/lib/mysql' 
+      - './init:/docker-entrypoint-initdb.d'
+    #command: bash -c "show databases;"
+
+  node_server:
+    container_name: node_client
+    build: .
+    volumes: 
+      - './:/app'
+    ports: 
+      - '3000:3000'
